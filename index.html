@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeenInfo | দ্বীন ইনফো - আধুনিক ইসলামিক সমাধান</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#10b981', 600: '#059669', 950: '#022c22' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    #progressBar { position: fixed; top: 0; left: 0; height: 4px; background: #10b981; z-index: 50; transition: width 0.1s; }
+  </style>
+</head>
+
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col" id="bodyRoot">
+
+  <!-- Scroll Progress Bar -->
+  <div id="progressBar" style="width: 0%;"></div>
+
+  <!-- Top Prayer & Forbidden Times Bar -->
+  <div class="bg-slate-950 border-b border-slate-800 text-xs py-2 px-4">
+    <div class="max-w-6xl mx-auto flex flex-col gap-1.5">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <div class="flex items-center gap-1 text-brand-500 font-semibold">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span id="userLocation">সালাতের সময়সূচী (লোড হচ্ছে...)</span>
+        </div>
+        <div class="flex items-center gap-3 text-slate-300 font-mono text-[11px]" id="prayerTimes">
+          <span>ফজর: --:--</span> <span>জোহর: --:--</span> <span>আসর: --:--</span> <span>মাগরিব: --:--</span> <span>ইশা: --:--</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-900 text-[11px]">
+        <span class="text-rose-400 font-bold flex items-center gap-1">
+          <i data-lucide="alert-octagon" class="w-3 h-3"></i> ৩টি নিষিদ্ধ সময়:
+        </span>
+        <div class="flex flex-wrap gap-3 text-slate-300 font-mono" id="forbiddenTimes">
+          <span>১. সূর্যোদয়: --:--</span>
+          <span>২. দ্বিপাহর: --:--</span>
+          <span>৩. সূর্যাস্ত: --:--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="#" class="flex items-center gap-2 text-xl font-bold tracking-tight text-brand-500">
+        <i data-lucide="book-open-check" class="w-6 h-6"></i> DeenInfo
+      </a>
+      
+      <div class="flex items-center gap-2">
+        <button onclick="openModal('askModal')" class="px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1">
+          <i data-lucide="help-circle" class="w-4 h-4"></i> প্রশ্ন করুন
+        </button>
+        <button onclick="checkAdminPassword()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-lg text-xs flex items-center gap-1 border border-amber-500/30">
+          <i data-lucide="lock" class="w-4 h-4"></i> উত্তর দিন (Admin)
+        </button>
+        <button onclick="openModal('libraryModal')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 relative" title="লাইব্রেরি">
+          <i data-lucide="bookmark" class="w-5 h-5"></i>
+          <span id="savedCount" class="absolute -top-1 -right-1 bg-brand-500 text-slate-950 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
+    
+    <!-- Hero & Search -->
+    <section class="text-center mb-8">
+      <h1 class="text-2xl md:text-4xl font-extrabold mb-2 text-white">ইসলামিক প্রশ্নোত্তর ও সঠিক জ্ঞানভান্ডার</h1>
+      <p class="text-slate-400 text-sm mb-5">সংশয় নিরসন, সমসাময়িক ফতোয়া ও সিরাতের সত্য তথ্য পড়ুন।</p>
+
+      <div class="relative max-w-lg mx-auto">
+        <input type="text" id="searchInput" placeholder="যেকোনো বিষয় বা প্রশ্ন লিখে খুঁজুন..." 
+          class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-700 bg-slate-950 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 shadow-md text-sm">
+        <i data-lucide="search" class="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500"></i>
+      </div>
+    </section>
+
+    <!-- Pending Questions Section (পেন্ডিং প্রশ্নসমূহ) -->
+    <div id="pendingContainer" class="mb-6 hidden">
+      <h3 class="text-sm font-bold text-amber-400 mb-2 flex items-center gap-1.5">
+        <i data-lucide="clock" class="w-4 h-4"></i> উত্তরের অপেক্ষায় থাকা প্রশ্নসমূহ (Pending)
+      </h3>
+      <div id="pendingList" class="space-y-2"></div>
+    </div>
+
+    <!-- Published Articles Container -->
+    <div id="articlesList" class="space-y-5"></div>
+
+  </main>
+
+  <!-- Public Ask Question Modal -->
+  <div id="askModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg text-brand-500 flex items-center gap-2">
+          <i data-lucide="help-circle" class="w-5 h-5"></i> আপনার প্রশ্ন জমা দিন
+        </h3>
+        <button onclick="closeModal('askModal')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form onsubmit="submitPublicQuestion(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">আপনার নাম (ঐচ্ছিক):</label>
+          <input type="text" id="askName" placeholder="যেমন: আব্দুল্লাহ" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">আপনার প্রশ্ন বা সংশয় বিস্তারিত লিখুন:*</label>
+          <textarea id="askText" placeholder="প্রশ্নটি স্পষ্ট করে লিখুন..." required rows="4" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded flex items-center justify-center gap-2">
+          <i data-lucide="send" class="w-4 h-4"></i> প্রশ্ন সাবমিট করুন
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Answer Modal (Private) -->
+  <div id="adminModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg text-amber-400 flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-5 h-5"></i> এডমিন প্যানেল - উত্তর প্রকাশ করুন
+        </h3>
+        <button onclick="closeModal('adminModal')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form onsubmit="publishAnswerByAdmin(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">প্রশ্ন / শিরোনাম:</label>
+          <input type="text" id="adminTitle" placeholder="প্রশ্নের শিরোনাম লিখুন" required class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">সংক্ষিপ্ত জবাব:</label>
+          <textarea id="adminShort" placeholder="এক কথায় বা সংক্ষেপে মূল উত্তর" required rows="2" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">বিস্তারিত প্রমাণ ও দলিলসহ ব্যাখ্যা:</label>
+          <textarea id="adminFull" placeholder="কুরআন-হাদীসের হাওয়ালাসহ পূর্ণাঙ্গ উত্তর লিখুন..." required rows="4" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white"></textarea>
+        </div>
+        <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded flex items-center justify-center gap-2">
+          <i data-lucide="check-circle" class="w-4 h-4"></i> ওয়েবসাইটে উত্তরটি লাইভ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Library Modal -->
+  <div id="libraryModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[80vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+        <h3 class="font-bold text-lg text-amber-400 flex items-center gap-2"><i data-lucide="bookmark" class="w-5 h-5"></i> সেভ করা লাইব্রেরি</h3>
+        <button onclick="closeModal('libraryModal')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="libraryList" class="overflow-y-auto space-y-3 flex-grow text-sm"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 DeenInfo. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    // Secret Password for Admin Answer Option
+    const ADMIN_PASSWORD = "deen123";
+
+    let posts = JSON.parse(localStorage.getItem('custom_posts')) || [
+      {
+        id: 1,
+        title: "ইসলামে নারীর ভূমিকা ও অধিকার কি সীমিত?",
+        shortAnswer: "ইসলাম নারীদের সম্মান, শিক্ষার অধিকার ও সম্পদের উত্তরাধিকার নিশ্চিত করেছে যা তৎকালীন সমাজে কল্পনাতীত ছিল।",
+        fullAnswer: "বিস্তারিত প্রমাণ: সূরা আন-নিসার ৭ নম্বর আয়াত অনুযায়ী নারী ও পুরুষ উভয়েরই মা-বাবা ও স্বজনদের সম্পদে অধিকার রয়েছে।"
+      }
+    ];
+
+    let pendingQuestions = JSON.parse(localStorage.getItem('pending_qs')) || [
+      { id: 101, name: "রাফি", q: "সফরে কত কিমি পথ অতিক্রম করলে কসর নামাজ পড়তে হয়?" }
+    ];
+
+    let savedPosts = JSON.parse(localStorage.getItem('saved_posts')) || [];
+
+    // Render Posts
+    function renderPosts(data) {
+      const container = document.getElementById('articlesList');
+      container.innerHTML = '';
+
+      if(data.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-500 text-xs py-8">কোনো প্রকাশিত উত্তর পাওয়া যায়নি।</p>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const isSaved = savedPosts.includes(item.id);
+        const card = document.createElement('div');
+        card.className = "bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-lg relative";
+        card.innerHTML = `
+          <h2 class="text-lg font-bold text-white mb-2">📌 ${item.title}</h2>
+          <div class="bg-slate-900 border-l-4 border-brand-500 p-3 rounded my-2">
+            <p class="text-xs font-semibold text-brand-500 uppercase">সংক্ষিপ্ত জবাব:</p>
+            <p class="text-slate-200 text-sm mt-1">${item.shortAnswer}</p>
+          </div>
+          <div id="full-${item.id}" class="hidden text-slate-300 text-sm mt-3 pt-3 border-t border-slate-900 leading-relaxed">
+            ${item.fullAnswer}
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-2 border-t border-slate-900 text-xs">
+            <button onclick="toggleDetails(${item.id})" class="text-brand-500 font-bold flex items-center gap-1 hover:underline">
+              <span>বিস্তারিত প্রমাণ</span> <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleSave(${item.id})" class="p-1.5 bg-slate-900 rounded ${isSaved ? 'text-amber-400' : 'text-slate-400'}">
+                <i data-lucide="bookmark" class="w-4 h-4"></i>
+              </button>
+              <button onclick="copyShare('${item.title}')" class="px-3 py-1 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded flex items-center gap-1">
+                <i data-lucide="share-2" class="w-3 h-3"></i> শেয়ার
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    // Render Pending Questions
+    function renderPending() {
+      const container = document.getElementById('pendingList');
+      const box = document.getElementById('pendingContainer');
+      
+      if(pendingQuestions.length === 0) {
+        box.classList.add('hidden');
+        return;
+      }
+      
+      box.classList.remove('hidden');
+      container.innerHTML = '';
+      
+      pendingQuestions.forEach(pq => {
+        container.innerHTML += `
+          <div class="p-3 bg-slate-950 border border-amber-500/30 rounded-lg flex justify-between items-center text-xs">
+            <div>
+              <p class="text-slate-200 font-semibold">❓ "${pq.q}"</p>
+              <p class="text-slate-500 text-[10px]">প্রশ্নকর্তা: ${pq.name}</p>
+            </div>
+            <button onclick="fillAdminForm('${pq.q.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30 rounded text-[10px] font-bold">
+              উত্তর দিন
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // Public Submit Question
+    function submitPublicQuestion(e) {
+      e.preventDefault();
+      const name = document.getElementById('askName').value || 'বেনামী ইউজার';
+      const q = document.getElementById('askText').value;
+
+      pendingQuestions.unshift({ id: Date.now(), name: name, q: q });
+      localStorage.setItem('pending_qs', JSON.stringify(pendingQuestions));
+      
+      alert('আপনার প্রশ্নটি গৃহীত হয়েছে! উত্তর প্রদান করা হলে তা মূল পাতায় পাবলিশ হবে।');
+      document.getElementById('askText').value = '';
+      closeModal('askModal');
+      renderPending();
+    }
+
+    // Check Admin Password Security
+    function checkAdminPassword() {
+      const input = prompt("এডমিন প্যানেলে প্রবেশ করতে সিক্রেট পাসওয়ার্ড লিখুন:");
+      if (input === ADMIN_PASSWORD) {
+        openModal('adminModal');
+      } else if (input !== null) {
+        alert("ভুল পাসওয়ার্ড! আপনি উত্তর দেওয়ার অনুমতি পাননি।");
+      }
+    }
+
+    // Shortcut to fill pending question into admin form
+    function fillAdminForm(questionText) {
+      const input = prompt("উত্তর দিতে এডমিন পাসওয়ার্ড লিখুন:");
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById('adminTitle').value = questionText;
+        openModal('adminModal');
+      } else if (input !== null) {
+        alert("ভুল পাসওয়ার্ড!");
+      }
+    }
+
+    // Admin Publish Answer
+    function publishAnswerByAdmin(e) {
+      e.preventDefault();
+      const title = document.getElementById('adminTitle').value;
+      const shortAns = document.getElementById('adminShort').value;
+      const fullAns = document.getElementById('adminFull').value;
+
+      posts.unshift({ id: Date.now(), title: title, shortAnswer: shortAns, fullAnswer: fullAns });
+      localStorage.setItem('custom_posts', JSON.stringify(posts));
+
+      // Remove question from pending list if exists
+      pendingQuestions = pendingQuestions.filter(pq => pq.q !== title);
+      localStorage.setItem('pending_qs', JSON.stringify(pendingQuestions));
+
+      alert('উত্তরটি সফলভাবে ওয়েবসাইটে পাবলিশ করা হয়েছে!');
+      document.getElementById('adminTitle').value = '';
+      document.getElementById('adminShort').value = '';
+      document.getElementById('adminFull').value = '';
+      
+      closeModal('adminModal');
+      renderPosts(posts);
+      renderPending();
+    }
+
+    function toggleDetails(id) { document.getElementById(`full-${id}`).classList.toggle('hidden'); }
+
+    function toggleSave(id) {
+      if(savedPosts.includes(id)) {
+        savedPosts = savedPosts.filter(item => item !== id);
+      } else {
+        savedPosts.push(id);
+      }
+      localStorage.setItem('saved_posts', JSON.stringify(savedPosts));
+      document.getElementById('savedCount').innerText = savedPosts.length;
+      renderPosts(posts);
+      renderLibrary();
+    }
+
+    function copyShare(title) {
+      navigator.clipboard.writeText(`${title}\n\nবিস্তারিত পড়ুন DeenInfo প্ল্যাটফর্মে: ${window.location.href}`);
+      alert('লিংক কপি হয়েছে!');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function renderLibrary() {
+      const lib = document.getElementById('libraryList');
+      const filtered = posts.filter(p => savedPosts.includes(p.id));
+      lib.innerHTML = filtered.length ? '' : '<p class="text-slate-500 text-xs">কোনো সেভ করা পোস্ট নেই।</p>';
+      filtered.forEach(p => {
+        lib.innerHTML += `<div class="p-2 bg-slate-950 rounded border border-slate-800"><p class="font-bold text-white">${p.title}</p></div>`;
+      });
+    }
+
+    window.onscroll = function() {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      document.getElementById("progressBar").style.width = ((winScroll / height) * 100) + "%";
+    };
+
+    function adjustTime(timeStr, mins) {
+      if(!timeStr) return "--:--";
+      let parts = timeStr.split(':');
+      let date = new Date();
+      date.setHours(parseInt(parts[0]), parseInt(parts[1]) + mins, 0);
+      let h = date.getHours().toString().padStart(2, '0');
+      let m = date.getMinutes().toString().padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    async function loadPrayerTimes(url, locationName) {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const t = data.data.timings;
+
+        document.getElementById('userLocation').innerText = locationName;
+        document.getElementById('prayerTimes').innerHTML = `
+          <span>ফজর: ${t.Fajr}</span> <span>জোহর: ${t.Dhuhr}</span> <span>আসর: ${t.Asr}</span> <span>মাগরিব: ${t.Maghrib}</span> <span>ইশা: ${t.Isha}</span>
+        `;
+
+        let sunriseEnd = adjustTime(t.Sunrise, 15);
+        let dhuhrStart = adjustTime(t.Dhuhr, -15);
+        let sunsetStart = adjustTime(t.Sunset, -15);
+
+        document.getElementById('forbiddenTimes').innerHTML = `
+          <span>১. সূর্যোদয়: ${t.Sunrise} - ${sunriseEnd}</span>
+          <span>২. দ্বিপাহর: ${dhuhrStart} - ${t.Dhuhr}</span>
+          <span>৩. সূর্যাস্ত: ${sunsetStart} - ${t.Sunset}</span>
+        `;
+      } catch(e) { console.log("Time Fetch Error"); }
+    }
+
+    function initPrayerSystem() {
+      const defaultUrl = `https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1`;
+      loadPrayerTimes(defaultUrl, "ঢাকা (ডিফল্ট)");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const geoUrl = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=1`;
+          loadPrayerTimes(geoUrl, "আপনার এলাকা (লাইভ)");
+        });
+      }
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      renderPosts(posts.filter(p => p.title.toLowerCase().includes(q) || p.shortAnswer.toLowerCase().includes(q)));
+    });
+
+    document.getElementById('savedCount').innerText = savedPosts.length;
+    renderPosts(posts);
+    renderPending();
+    renderLibrary();
+    initPrayerSystem();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
