@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn" class="dark">
 <head>
@@ -89,7 +90,7 @@
       </div>
     </section>
 
-    <!-- Pending Questions Section (পেন্ডিং প্রশ্নসমূহ) -->
+    <!-- Pending Questions Section -->
     <div id="pendingContainer" class="mb-6 hidden">
       <h3 class="text-sm font-bold text-amber-400 mb-2 flex items-center gap-1.5">
         <i data-lucide="clock" class="w-4 h-4"></i> উত্তরের অপেক্ষায় থাকা প্রশ্নসমূহ (Pending)
@@ -173,7 +174,6 @@
   </footer>
 
   <script>
-    // Secret Password for Admin Answer Option
     const ADMIN_PASSWORD = "deen123";
 
     let posts = JSON.parse(localStorage.getItem('custom_posts')) || [
@@ -191,7 +191,6 @@
 
     let savedPosts = JSON.parse(localStorage.getItem('saved_posts')) || [];
 
-    // Render Posts
     function renderPosts(data) {
       const container = document.getElementById('articlesList');
       container.innerHTML = '';
@@ -233,7 +232,6 @@
       lucide.createIcons();
     }
 
-    // Render Pending Questions
     function renderPending() {
       const container = document.getElementById('pendingList');
       const box = document.getElementById('pendingContainer');
@@ -261,7 +259,6 @@
       });
     }
 
-    // Public Submit Question
     function submitPublicQuestion(e) {
       e.preventDefault();
       const name = document.getElementById('askName').value || 'বেনামী ইউজার';
@@ -276,7 +273,6 @@
       renderPending();
     }
 
-    // Check Admin Password Security
     function checkAdminPassword() {
       const input = prompt("এডমিন প্যানেলে প্রবেশ করতে সিক্রেট পাসওয়ার্ড লিখুন:");
       if (input === ADMIN_PASSWORD) {
@@ -286,7 +282,6 @@
       }
     }
 
-    // Shortcut to fill pending question into admin form
     function fillAdminForm(questionText) {
       const input = prompt("উত্তর দিতে এডমিন পাসওয়ার্ড লিখুন:");
       if (input === ADMIN_PASSWORD) {
@@ -297,7 +292,6 @@
       }
     }
 
-    // Admin Publish Answer
     function publishAnswerByAdmin(e) {
       e.preventDefault();
       const title = document.getElementById('adminTitle').value;
@@ -307,7 +301,6 @@
       posts.unshift({ id: Date.now(), title: title, shortAnswer: shortAns, fullAnswer: fullAns });
       localStorage.setItem('custom_posts', JSON.stringify(posts));
 
-      // Remove question from pending list if exists
       pendingQuestions = pendingQuestions.filter(pq => pq.q !== title);
       localStorage.setItem('pending_qs', JSON.stringify(pendingQuestions));
 
