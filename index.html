@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn" class="dark">
 <head>
@@ -21,37 +20,51 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     #progressBar { position: fixed; top: 0; left: 0; height: 4px; background: #10b981; z-index: 50; transition: width 0.1s; }
+    .font-serif-custom { font-family: 'Georgia', 'Times New Roman', serif; }
   </style>
 </head>
 
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col" id="bodyRoot">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300" id="bodyRoot">
 
   <!-- Scroll Progress Bar -->
   <div id="progressBar" style="width: 0%;"></div>
 
-  <!-- Top Prayer & Forbidden Times Bar -->
-  <div class="bg-slate-950 border-b border-slate-800 text-xs py-2 px-4">
-    <div class="max-w-6xl mx-auto flex flex-col gap-1.5">
-      <div class="flex flex-wrap justify-between items-center gap-2">
-        <div class="flex items-center gap-1 text-brand-500 font-semibold">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> <span id="userLocation">সালাতের সময়সূচী (লোড হচ্ছে...)</span>
+  <!-- Dynamic Highlighted Prayer & Forbidden Times Bar -->
+  <section class="bg-slate-950 border-b border-slate-800 py-3 px-4 shadow-inner">
+    <div class="max-w-6xl mx-auto flex flex-col gap-2.5">
+      
+      <!-- Top Row: Location & Location Status -->
+      <div class="flex justify-between items-center border-b border-slate-800/80 pb-1.5">
+        <div class="flex items-center gap-1.5 text-brand-500 font-bold text-xs md:text-sm">
+          <i data-lucide="map-pin" class="w-4 h-4 animate-bounce"></i> 
+          <span id="userLocation">সালাতের সময়সূচী (লোড হচ্ছে...)</span>
         </div>
-        <div class="flex items-center gap-3 text-slate-300 font-mono text-[11px]" id="prayerTimes">
-          <span>ফজর: --:--</span> <span>জোহর: --:--</span> <span>আসর: --:--</span> <span>মাগরিব: --:--</span> <span>ইশা: --:--</span>
-        </div>
+        <span class="text-[10px] bg-brand-500/10 text-brand-500 border border-brand-500/20 px-2 py-0.5 rounded-full font-mono">লাইভ সময়সূচী</span>
       </div>
-      <div class="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-900 text-[11px]">
-        <span class="text-rose-400 font-bold flex items-center gap-1">
-          <i data-lucide="alert-octagon" class="w-3 h-3"></i> ৩টি নিষিদ্ধ সময়:
+
+      <!-- 5 Prayer Times (Highlighted Cards) -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs" id="prayerTimes">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">ফজর</span> <strong class="text-brand-500 font-mono">--:--</strong></div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">জোহর</span> <strong class="text-brand-500 font-mono">--:--</strong></div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">আসর</span> <strong class="text-brand-500 font-mono">--:--</strong></div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">মাগরিব</span> <strong class="text-brand-500 font-mono">--:--</strong></div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2 col-span-2 sm:col-span-1"><span class="block text-slate-400 text-[10px]">ইশা</span> <strong class="text-brand-500 font-mono">--:--</strong></div>
+      </div>
+
+      <!-- Forbidden Prayer Times (Glow Red Alert) -->
+      <div class="bg-rose-950/20 border border-rose-500/30 rounded-lg p-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span class="text-rose-400 font-bold flex items-center gap-1.5 shrink-0">
+          <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-500"></i> ৩টি নিষিদ্ধ সময়:
         </span>
-        <div class="flex flex-wrap gap-3 text-slate-300 font-mono" id="forbiddenTimes">
+        <div class="flex flex-wrap items-center gap-3 text-slate-300 font-mono text-[11px]" id="forbiddenTimes">
           <span>১. সূর্যোদয়: --:--</span>
           <span>২. দ্বিপাহর: --:--</span>
           <span>৩. সূর্যাস্ত: --:--</span>
         </div>
       </div>
+
     </div>
-  </div>
+  </section>
 
   <!-- Header -->
   <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800">
@@ -65,11 +78,14 @@
           <i data-lucide="help-circle" class="w-4 h-4"></i> প্রশ্ন করুন
         </button>
         <button onclick="checkAdminPassword()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-lg text-xs flex items-center gap-1 border border-amber-500/30">
-          <i data-lucide="lock" class="w-4 h-4"></i> উত্তর দিন (Admin)
+          <i data-lucide="lock" class="w-4 h-4"></i> Admin
         </button>
         <button onclick="openModal('libraryModal')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 relative" title="লাইব্রেরি">
           <i data-lucide="bookmark" class="w-5 h-5"></i>
           <span id="savedCount" class="absolute -top-1 -right-1 bg-brand-500 text-slate-950 text-[10px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button onclick="openModal('settingsModal')" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300" title="সেটিংস">
+          <i data-lucide="settings" class="w-5 h-5"></i>
         </button>
       </div>
     </div>
@@ -154,6 +170,60 @@
           <i data-lucide="check-circle" class="w-4 h-4"></i> ওয়েবসাইটে উত্তরটি লাইভ করুন
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Advanced Control Panel) -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg text-brand-500 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5"></i> ডিসপ্লে ও সাইট সেটিংস</h3>
+        <button onclick="closeModal('settingsModal')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      
+      <div class="space-y-4 text-xs">
+        <!-- Dark/Light Theme Toggle -->
+        <div class="flex items-center justify-between p-2 bg-slate-950 rounded-lg">
+          <span class="text-slate-300 font-semibold">ওয়েবসাইট থিম (Color Mode):</span>
+          <button onclick="toggleTheme()" class="px-3 py-1 bg-brand-600 text-slate-950 font-bold rounded flex items-center gap-1">
+            <i data-lucide="sun-moon" class="w-4 h-4"></i> থিম পরিবর্তন
+          </button>
+        </div>
+
+        <!-- Font Size Selection -->
+        <div>
+          <label class="block text-slate-400 mb-1">লেখার আকার (Font Size):</label>
+          <select id="fontSizeSelect" onchange="changeFontSize(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+            <option value="text-sm">ছোট (Small)</option>
+            <option value="text-base" selected>সাধারণ (Normal)</option>
+            <option value="text-lg">বড় (Large)</option>
+          </select>
+        </div>
+
+        <!-- Font Family Selection -->
+        <div>
+          <label class="block text-slate-400 mb-1">ফন্ট স্টাইল (Font Style):</label>
+          <select onchange="changeFontFamily(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
+            <option value="font-sans">ডিফল্ট মডার্ন (Sans-Serif)</option>
+            <option value="font-serif-custom">ক্লাসিক বুক স্টাইল (Serif)</option>
+          </select>
+        </div>
+
+        <!-- Notification Sound Toggle -->
+        <div class="flex items-center justify-between p-2 bg-slate-950 rounded-lg">
+          <span class="text-slate-300 font-semibold">ওয়াক্ত নোটিফিকেশন এলার্ট:</span>
+          <input type="checkbox" id="notifyCheck" class="w-4 h-4 accent-brand-500" checked>
+        </div>
+
+        <hr class="border-slate-800">
+
+        <!-- Reset Site Data -->
+        <div>
+          <button onclick="clearSiteData()" class="w-full py-2 bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-500/30 rounded font-bold flex items-center justify-center gap-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i> সেভ হওয়া ডাটা রিসেট করুন
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -278,7 +348,7 @@
       if (input === ADMIN_PASSWORD) {
         openModal('adminModal');
       } else if (input !== null) {
-        alert("ভুল পাসওয়ার্ড! আপনি উত্তর দেওয়ার অনুমতি পাননি।");
+        alert("ভুল পাসওয়ার্ড!");
       }
     }
 
@@ -312,6 +382,30 @@
       closeModal('adminModal');
       renderPosts(posts);
       renderPending();
+    }
+
+    // Settings Functions
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    function changeFontSize(sizeClass) {
+      const root = document.getElementById('bodyRoot');
+      root.classList.remove('text-sm', 'text-base', 'text-lg');
+      root.classList.add(sizeClass);
+    }
+
+    function changeFontFamily(fontClass) {
+      const root = document.getElementById('bodyRoot');
+      root.classList.remove('font-sans', 'font-serif-custom');
+      root.classList.add(fontClass);
+    }
+
+    function clearSiteData() {
+      if(confirm('আপনার সেভ করা লাইব্রেরি ও ক্যাশ ডাটা মুছে ফেলতে চান?')) {
+        localStorage.clear();
+        location.reload();
+      }
     }
 
     function toggleDetails(id) { document.getElementById(`full-${id}`).classList.toggle('hidden'); }
@@ -368,8 +462,13 @@
         const t = data.data.timings;
 
         document.getElementById('userLocation').innerText = locationName;
+        
         document.getElementById('prayerTimes').innerHTML = `
-          <span>ফজর: ${t.Fajr}</span> <span>জোহর: ${t.Dhuhr}</span> <span>আসর: ${t.Asr}</span> <span>মাগরিব: ${t.Maghrib}</span> <span>ইশা: ${t.Isha}</span>
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">ফজর</span> <strong class="text-brand-500 font-mono text-sm">${t.Fajr}</strong></div>
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">জোহর</span> <strong class="text-brand-500 font-mono text-sm">${t.Dhuhr}</strong></div>
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">আসর</span> <strong class="text-brand-500 font-mono text-sm">${t.Asr}</strong></div>
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2"><span class="block text-slate-400 text-[10px]">মাগরিব</span> <strong class="text-brand-500 font-mono text-sm">${t.Maghrib}</strong></div>
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-2 col-span-2 sm:col-span-1"><span class="block text-slate-400 text-[10px]">ইশা</span> <strong class="text-brand-500 font-mono text-sm">${t.Isha}</strong></div>
         `;
 
         let sunriseEnd = adjustTime(t.Sunrise, 15);
