@@ -94,6 +94,12 @@
   <!-- Main Content -->
   <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
     
+    <!-- TOP ADVERTISEMENT SLOT -->
+    <div class="mb-6 w-full p-3 bg-slate-950/60 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 text-xs min-h-[90px] flex items-center justify-center">
+      <!-- GOOGLE ADSENSE TOP CODE HERE -->
+      <span>[ বিজ্ঞাপন এরিয়া - Header Ad ]</span>
+    </div>
+
     <!-- Hero & Search -->
     <section class="text-center mb-8">
       <h1 class="text-2xl md:text-4xl font-extrabold mb-2 text-white">ইসলামিক প্রশ্নোত্তর ও সঠিক জ্ঞানভান্ডার</h1>
@@ -116,6 +122,12 @@
 
     <!-- Published Articles Container -->
     <div id="articlesList" class="space-y-5"></div>
+
+    <!-- BOTTOM ADVERTISEMENT SLOT -->
+    <div class="mt-8 w-full p-3 bg-slate-950/60 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 text-xs min-h-[90px] flex items-center justify-center">
+      <!-- GOOGLE ADSENSE BOTTOM CODE HERE -->
+      <span>[ বিজ্ঞাপন এরিয়া - Footer Ad ]</span>
+    </div>
 
   </main>
 
@@ -173,7 +185,7 @@
     </div>
   </div>
 
-  <!-- Settings Modal (Advanced Control Panel) -->
+  <!-- Settings Modal -->
   <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
       <div class="flex justify-between items-center mb-4">
@@ -182,7 +194,6 @@
       </div>
       
       <div class="space-y-4 text-xs">
-        <!-- Dark/Light Theme Toggle -->
         <div class="flex items-center justify-between p-2 bg-slate-950 rounded-lg">
           <span class="text-slate-300 font-semibold">ওয়েবসাইট থিম (Color Mode):</span>
           <button onclick="toggleTheme()" class="px-3 py-1 bg-brand-600 text-slate-950 font-bold rounded flex items-center gap-1">
@@ -190,7 +201,6 @@
           </button>
         </div>
 
-        <!-- Font Size Selection -->
         <div>
           <label class="block text-slate-400 mb-1">লেখার আকার (Font Size):</label>
           <select id="fontSizeSelect" onchange="changeFontSize(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
@@ -200,7 +210,6 @@
           </select>
         </div>
 
-        <!-- Font Family Selection -->
         <div>
           <label class="block text-slate-400 mb-1">ফন্ট স্টাইল (Font Style):</label>
           <select onchange="changeFontFamily(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white">
@@ -209,15 +218,8 @@
           </select>
         </div>
 
-        <!-- Notification Sound Toggle -->
-        <div class="flex items-center justify-between p-2 bg-slate-950 rounded-lg">
-          <span class="text-slate-300 font-semibold">ওয়াক্ত নোটিফিকেশন এলার্ট:</span>
-          <input type="checkbox" id="notifyCheck" class="w-4 h-4 accent-brand-500" checked>
-        </div>
-
         <hr class="border-slate-800">
 
-        <!-- Reset Site Data -->
         <div>
           <button onclick="clearSiteData()" class="w-full py-2 bg-rose-950/40 hover:bg-rose-900/60 text-rose-400 border border-rose-500/30 rounded font-bold flex items-center justify-center gap-1">
             <i data-lucide="trash-2" class="w-4 h-4"></i> সেভ হওয়া ডাটা রিসেট করুন
@@ -238,9 +240,32 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="mt-auto border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
-    <p>© 2026 DeenInfo. All Rights Reserved.</p>
+  <!-- AdSense Required Pages Modals -->
+  <div id="infoModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl max-h-[80vh] flex flex-col">
+      <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+        <h3 id="infoModalTitle" class="font-bold text-lg text-brand-500"></h3>
+        <button onclick="closeModal('infoModal')" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="infoModalBody" class="overflow-y-auto text-slate-300 text-xs space-y-3 leading-relaxed"></div>
+    </div>
+  </div>
+
+  <!-- Footer with Google AdSense Required Links -->
+  <footer class="mt-auto border-t border-slate-800 bg-slate-950 py-8 text-center text-xs text-slate-400">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col items-center gap-4">
+      <div class="flex flex-wrap justify-center gap-4 sm:gap-6 font-semibold text-slate-300">
+        <button onclick="showAdSensePage('about')" class="hover:text-brand-500 transition-colors">About Us</button>
+        <span>•</span>
+        <button onclick="showAdSensePage('privacy')" class="hover:text-brand-500 transition-colors">Privacy Policy</button>
+        <span>•</span>
+        <button onclick="showAdSensePage('terms')" class="hover:text-brand-500 transition-colors">Terms & Conditions</button>
+        <span>•</span>
+        <button onclick="showAdSensePage('contact')" class="hover:text-brand-500 transition-colors">Contact Us</button>
+      </div>
+      <p class="text-slate-500 text-[11px]">DeenInfo is a dedicated Islamic Knowledge Sharing Platform. All content is curated based on authentic Islamic scriptures.</p>
+      <p class="text-slate-600 text-[10px]">© 2026 DeenInfo. All Rights Reserved.</p>
+    </div>
   </footer>
 
   <script>
@@ -270,7 +295,7 @@
         return;
       }
 
-      data.forEach(item => {
+      data.forEach((item, index) => {
         const isSaved = savedPosts.includes(item.id);
         const card = document.createElement('div');
         card.className = "bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-lg relative";
@@ -298,6 +323,14 @@
           </div>
         `;
         container.appendChild(card);
+
+        // IN-FEED AD SLOT (Every 3 posts)
+        if((index + 1) % 3 === 0) {
+          const adCard = document.createElement('div');
+          adCard.className = "p-3 bg-slate-950/60 border border-dashed border-slate-800 rounded-xl text-center text-slate-500 text-xs min-h-[90px] flex items-center justify-center my-4";
+          adCard.innerHTML = `<span>[ বিজ্ঞাপন এরিয়া - In-Feed Ad ]</span>`;
+          container.appendChild(adCard);
+        }
       });
       lucide.createIcons();
     }
@@ -337,28 +370,30 @@
       pendingQuestions.unshift({ id: Date.now(), name: name, q: q });
       localStorage.setItem('pending_qs', JSON.stringify(pendingQuestions));
       
-      alert('আপনার প্রশ্নটি গৃহীত হয়েছে! উত্তর প্রদান করা হলে তা মূল পাতায় পাবলিশ হবে।');
+      alert('জাজাকাল্লাহু খাইরান! 🌸\n\nআপনার প্রশ্নটি সফলভাবে গৃহীত হয়েছে। আমাদের টিম বা এডমিন ভাই শীঘ্রই নির্ভরযোগ্য দলীলসহ উত্তর প্রদান করবেন, ইনশাআল্লাহ।');
       document.getElementById('askText').value = '';
       closeModal('askModal');
       renderPending();
     }
 
     function checkAdminPassword() {
-      const input = prompt("এডমিন প্যানেলে প্রবেশ করতে সিক্রেট পাসওয়ার্ড লিখুন:");
+      const input = prompt("আসসালামু আলাইকুম! এডমিন প্যানেলে প্রবেশ করতে সিক্রেট পাসওয়ার্ডটি লিখুন:");
       if (input === ADMIN_PASSWORD) {
+        alert("জাজাকাল্লাহু খাইরান! সঠিক পাসওয়ার্ড দেওয়া হয়েছে। দ্বীনের সেবায় আপনার এই প্রচেষ্টাকে আল্লাহ কবুল করুন।");
         openModal('adminModal');
       } else if (input !== null) {
-        alert("ভুল পাসওয়ার্ড!");
+        alert("দুঃখিত! ভুল পাসওয়ার্ড দেওয়া হয়েছে। কেবল অনুমোদিত এডমিনগণ প্রবেশ করতে পারবেন।");
       }
     }
 
     function fillAdminForm(questionText) {
-      const input = prompt("উত্তর দিতে এডমিন পাসওয়ার্ড লিখুন:");
+      const input = prompt("আসসালামু আলাইকুম! উত্তর প্রদান করতে এডমিন পাসওয়ার্ড লিখুন:");
       if (input === ADMIN_PASSWORD) {
+        alert("জাজাকাল্লাহু খাইরান! আপনার অবদানের জন্য আল্লাহ আপনাকে উত্তম প্রতিদান দিন।");
         document.getElementById('adminTitle').value = questionText;
         openModal('adminModal');
       } else if (input !== null) {
-        alert("ভুল পাসওয়ার্ড!");
+        alert("দুঃখিত! পাসওয়ার্ডটি ভুল ছিল।");
       }
     }
 
@@ -374,7 +409,7 @@
       pendingQuestions = pendingQuestions.filter(pq => pq.q !== title);
       localStorage.setItem('pending_qs', JSON.stringify(pendingQuestions));
 
-      alert('উত্তরটি সফলভাবে ওয়েবসাইটে পাবলিশ করা হয়েছে!');
+      alert('আলহামদুলিল্লাহ! উত্তরটি সফলভাবে মূল পাতায় পাবলিশ করা হয়েছে। জাজাকাল্লাহু খাইরান!');
       document.getElementById('adminTitle').value = '';
       document.getElementById('adminShort').value = '';
       document.getElementById('adminFull').value = '';
@@ -384,10 +419,45 @@
       renderPending();
     }
 
-    // Settings Functions
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
+    function showAdSensePage(type) {
+      const title = document.getElementById('infoModalTitle');
+      const body = document.getElementById('infoModalBody');
+
+      if(type === 'about') {
+        title.innerText = "About Us (আমাদের সম্পর্কে)";
+        body.innerHTML = `
+          <p><strong>DeenInfo (দ্বীন ইনফো)</strong> একটি আধুনিক ও নির্ভরযোগ্য ইসলামিক তথ্য ও প্রশ্নোত্তর প্ল্যাটফর্ম।</p>
+          <p>আমাদের মূল লক্ষ্য হলো সাধারণ মানুষের মনের ধর্মীয় সংশয় দূর করা, নিখুঁত ফতোয়া ও কুরআন-হাদীসের সহীহ তথ্য উপস্থাপন করা। এখানে ব্যবহারকারীরা সরাসরি প্রশ্ন জমা দিতে পারেন এবং অভিজ্ঞ এডমিনদের দ্বারা তার সঠিক সমাধান পেয়ে থাকেন।</p>
+          <p>আমরা তথ্য উপস্থাপনে সর্বোচ্চ সতর্কতা ও সহীহ দলীল অনুসরণের চেষ্টা করি।</p>
+        `;
+      } else if(type === 'privacy') {
+        title.innerText = "Privacy Policy (গোপনীয়তা নীতি)";
+        body.innerHTML = `
+          <p>আমরা আপনাদের ব্যক্তিগত তথ্য ও গোপনীয়তাকে গুরুত্ব দিয়ে থাকি।</p>
+          <p>১. ব্যবহারকারীরা প্রশ্ন করার সময় তাদের যে নাম ব্যবহার করেন, তা ঐচ্ছিক।</p>
+          <p>২. ওয়েবসাইট ব্যবহারের সুবিধার্থে স্থানীয় ব্রাউজার স্টোরেজ (Local Storage) ব্যবহার করা হয়।</p>
+          <p>৩. আমরা গুগল এডসেন্স বা থার্ড-পার্টি বিজ্ঞাপন পার্টনারদের মাধ্যমে কুকিজ ব্যবহার করতে পারি, যা সাধারণ ইউজার এক্সপেরিয়েন্স উন্নয়নের জন্য ব্যবহৃত হয়।</p>
+        `;
+      } else if(type === 'terms') {
+        title.innerText = "Terms & Conditions (শর্তাবলী)";
+        body.innerHTML = `
+          <p>১. ওয়েবসাইটটি কেবল ইসলামিক শিক্ষা ও বিশুদ্ধ জ্ঞান চর্চার উদ্দেশ্যে ব্যবহার করতে হবে।</p>
+          <p>২. কোনো প্রকার অশালীন, বিভ্রান্তিকর বা হিংসাত্মক প্রশ্ন জমা দেওয়া সম্পূর্ণ নিষিদ্ধ।</p>
+          <p>৩. এডমিন যেকোনো অনুপযুক্ত পোস্ট সংশোধন বা মুছে ফেলার সর্বাত্মক অধিকার রাখেন।</p>
+        `;
+      } else if(type === 'contact') {
+        title.innerText = "Contact Us (যোগাযোগ)";
+        body.innerHTML = `
+          <p>আপনার কোনো মতামত, পরামর্শ বা অভিযোগ থাকলে আমাদের সাথে সরাসরি যোগাযোগ করতে পারেন:</p>
+          <p>📧 Email: <strong>deeninfo.official@gmail.com</strong></p>
+          <p>🌐 Website: <strong>https://rukshanayousuf99-oss.github.io/deeninfo/</strong></p>
+          <p>আল্লাহ আমাদের সকলের প্রচেষ্টাগুলোকে কবুল করুন। আমিন।</p>
+        `;
+      }
+      openModal('infoModal');
     }
+
+    function toggleTheme() { document.documentElement.classList.toggle('dark'); }
 
     function changeFontSize(sizeClass) {
       const root = document.getElementById('bodyRoot');
